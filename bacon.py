@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
 import os
+import sys
 import argparse
 import logging
 import yaml
@@ -128,6 +129,10 @@ if __name__ == "__main__":
     if pig.args.file:
         pig.parse_file(pig.args.file)
 
+    if not pig.final_state:
+        LOGGER.debug("No changes defined")
+        sys.exit(0)
+
     pp = pprint.PrettyPrinter(indent=4)
 
     LOGGER.debug("We will end up with:")
@@ -135,8 +140,11 @@ if __name__ == "__main__":
 
     pig.calculate_changes()
 
-    LOGGER.debug("Changes to apply:")
-    LOGGER.debug(pp.pprint(pig.changes))
+    if not pig.changes:
+        LOGGER.debug("No changes to be made")
+    else:
+        LOGGER.debug("Changes to apply:")
+        LOGGER.debug(pp.pprint(pig.changes))
 
-    if not args.test:
-        pig.apply_changes()
+        if not args.test:
+            pig.apply_changes()
