@@ -20,8 +20,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 '''
 
+from __future__ import print_function
 import argparse
 import logging
+import yaml
+
+
+class Piggy(object):
+    ''' A class to hold our final state, and any changes we want to apply '''
+
+    def __init__(self):
+        self.changes = None
+        self.final_state = None
+
+    def parse_file(self, filename):
+        ''' Parse a yaml file with instructions, and add it to our list '''
+
+        with open(filename, 'r') as stream:
+            try:
+                self.final_state = yaml.load(stream)
+            except yaml.YAMLError as exc:
+                print(exc)
 
 
 def parse_arguments():
@@ -30,6 +49,11 @@ def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbose', help='Increase verbosity',
                         action='store_true', required=False)
+    parser.add_argument('-t', '--test', help="Test only, don't apply changes",
+                        action='store_true', required=False)
+    parser.add_argument('-f', '--file', help='File to use for definitions',
+                        action='store', required=False)
+
     return parser.parse_args()
 
 
@@ -47,3 +71,11 @@ if __name__ == "__main__":
     LOGGER.addHandler(logging.StreamHandler())
 
     LOGGER.debug("Starting the sizzle")
+
+    pig = Piggy()
+
+    if args.file:
+        pig.parse_file(args.file)
+
+    LOGGER.debug("We will end up with:")
+    LOGGER.debug(pig.final_state)

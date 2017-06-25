@@ -1,0 +1,4 @@
+ourFile:
+  type: file
+  path: /tmp/foo
+  content: "Hello world"
