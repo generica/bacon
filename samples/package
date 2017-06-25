@@ -1,0 +1,8 @@
+ourPackage:
+  type: package
+  ensure: present
+  name: php
+ourNoPackage
+  type: package
+  ensure: absent
+  name: php3
