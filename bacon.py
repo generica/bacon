@@ -25,6 +25,7 @@ import os
 import argparse
 import logging
 import yaml
+import pprint
 
 
 class Piggy(object):
@@ -127,13 +128,15 @@ if __name__ == "__main__":
     if pig.args.file:
         pig.parse_file(pig.args.file)
 
+    pp = pprint.PrettyPrinter(indent=4)
+
     LOGGER.debug("We will end up with:")
-    LOGGER.debug(pig.final_state)
+    LOGGER.debug(pp.pprint(pig.final_state))
 
     pig.calculate_changes()
 
     LOGGER.debug("Changes to apply:")
-    LOGGER.debug(pig.changes)
+    LOGGER.debug(pp.pprint(pig.changes))
 
     if not args.test:
         pig.apply_changes()
