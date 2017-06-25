@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 from __future__ import print_function
+import os
 import argparse
 import logging
 import yaml
@@ -29,8 +30,9 @@ import yaml
 class Piggy(object):
     ''' A class to hold our final state, and any changes we want to apply '''
 
-    def __init__(self):
-        self.changes = None
+    def __init__(self, arguments):
+        self.args = arguments
+        self.changes = {}
         self.final_state = None
 
     def parse_file(self, filename):
@@ -42,6 +44,25 @@ class Piggy(object):
             except yaml.YAMLError as exc:
                 print(exc)
 
+    def calculate_changes(self):
+        ''' Work out what instructions we'll need to follow, and which ones will have no effect '''
+
+        for changeName, change in self.final_state.items():
+            LOGGER.debug(change)
+            if change['type'] == 'file':
+                # FIXME: Probably best to create the file we want, in a temp location, and
+                #        use filecmp to see if it's how we want it.
+                if not os.path.exists(change['path']):
+                    ''' Doesn't exist at all, definitely add this to changes needed '''
+                    self.changes.update({changeName: change})
+
+    def apply_changes(self):
+        ''' Apply the changes we've calculated '''
+
+        for changeName, change in self.changes.items():
+            if change['type'] == 'file':
+                with open(change['path'],'w') as f:
+                    f.write(change['content'])
 
 def parse_arguments():
     ''' See what's up '''
@@ -72,10 +93,19 @@ if __name__ == "__main__":
 
     LOGGER.debug("Starting the sizzle")
 
-    pig = Piggy()
+    pig = Piggy(args)
 
-    if args.file:
-        pig.parse_file(args.file)
+    # TODO: Allow multiple files? How to deal with duplicate conflicting definitions
+    #       Actually, we'll have to solve that regardless
+    if pig.args.file:
+        pig.parse_file(pig.args.file)
 
     LOGGER.debug("We will end up with:")
     LOGGER.debug(pig.final_state)
+
+    pig.calculate_changes()
+
+    LOGGER.debug("Changes to apply:")
+    LOGGER.debug(pig.changes)
+
+    pig.apply_changes()
