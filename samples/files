@@ -2,3 +2,7 @@ ourFile:
   type: file
   path: /tmp/foo
   content: "Hello world"
+ourFile2:
+  type: file
+  path: /tmp/foo2
+  content: "Hello world again"

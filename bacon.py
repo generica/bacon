@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 from __future__ import print_function
-import os
 import argparse
 import logging
 import yaml
@@ -48,21 +47,42 @@ class Piggy(object):
         ''' Work out what instructions we'll need to follow, and which ones will have no effect '''
 
         for changeName, change in self.final_state.items():
-            LOGGER.debug(change)
-            if change['type'] == 'file':
-                # FIXME: Probably best to create the file we want, in a temp location, and
-                #        use filecmp to see if it's how we want it.
-                if not os.path.exists(change['path']):
-                    ''' Doesn't exist at all, definitely add this to changes needed '''
-                    self.changes.update({changeName: change})
+
+            if 'type' not in change:
+                LOGGER.error("No change type associated with named resource: %s", changeName)
+                continue
+            else:
+                change_type = "modules.%s" % (change['type'])
+
+            try:
+                needs_change = getattr(__import__(change_type, fromlist=["needs_change"]), "needs_change")
+            except ImportError:
+                LOGGER.error("No support available for resource type: %s", change['type'])
+                continue
+
+            if needs_change(change):
+                self.changes.update({changeName: change})
+
 
     def apply_changes(self):
         ''' Apply the changes we've calculated '''
 
         for changeName, change in self.changes.items():
-            if change['type'] == 'file':
-                with open(change['path'],'w') as f:
-                    f.write(change['content'])
+
+            if 'type' not in change:
+                LOGGER.error("No change type associated with named resource: %s", changeName)
+                continue
+            else:
+                change_type = "modules.%s" % (change['type'])
+
+            try:
+                perform_change = getattr(__import__(change_type, fromlist=["perform_change"]), "perform_change")
+            except ImportError:
+                LOGGER.error("No support available for resource type: %s", change['type'])
+                continue
+
+            perform_change(change)
+
 
 def parse_arguments():
     ''' See what's up '''
