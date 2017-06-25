@@ -5,4 +5,14 @@ ourFile:
 ourFile2:
   type: file
   path: /tmp/foo2
+  user: brett
+  group: nogroup
   content: "Hello world again"
+bigFile:
+  type: file
+  mode: 0644
+  path: /tmp/foo3
+  content: |
+    This is a bigger content
+    with a few
+    lines and such

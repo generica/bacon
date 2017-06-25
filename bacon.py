@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 from __future__ import print_function
+import os
 import argparse
 import logging
 import yaml
@@ -45,6 +46,9 @@ class Piggy(object):
 
     def calculate_changes(self):
         ''' Work out what instructions we'll need to follow, and which ones will have no effect '''
+
+        if not self.final_state:
+            return
 
         for changeName, change in self.final_state.items():
 
@@ -111,6 +115,9 @@ if __name__ == "__main__":
 
     LOGGER.addHandler(logging.StreamHandler())
 
+    if os.geteuid() != 0:
+        LOGGER.warning("You are not running this as root. Expect failures")
+
     LOGGER.debug("Starting the sizzle")
 
     pig = Piggy(args)
@@ -128,4 +135,5 @@ if __name__ == "__main__":
     LOGGER.debug("Changes to apply:")
     LOGGER.debug(pig.changes)
 
-    pig.apply_changes()
+    if not args.test:
+        pig.apply_changes()
