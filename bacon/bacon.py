@@ -36,16 +36,16 @@ class Piggy(object):
     def __init__(self, arguments):
         self.args = arguments
         self.changes = {}
-        self.final_state = None
+        self.final_state = {}
 
     def parse_file(self, filename):
         ''' Parse a yaml file with instructions, and add it to our list '''
 
         with open(filename, 'r') as stream:
             try:
-                self.final_state = yaml.load(stream)
+                self.final_state.update(yaml.load(stream))
             except yaml.YAMLError as exc:
-                print(exc)
+                LOGGER.error(exc)
 
     def calculate_changes(self):
         ''' Work out what instructions we'll need to follow, and which ones will have no effect '''
@@ -100,7 +100,7 @@ def parse_arguments():
     parser.add_argument('-t', '--test', help="Test only, don't apply changes",
                         action='store_true', required=False)
     parser.add_argument('-f', '--file', help='File to use for definitions',
-                        action='store', required=False)
+                        action='append', required=False)
 
     return parser.parse_args()
 
@@ -126,10 +126,8 @@ def main():
 
     pig = Piggy(args)
 
-    # TODO: Allow multiple files? How to deal with duplicate conflicting definitions
-    #       Actually, we'll have to solve that regardless
-    if pig.args.file:
-        pig.parse_file(pig.args.file)
+    for pigfile in pig.args.file:
+        pig.parse_file(pigfile)
 
     if not pig.final_state:
         LOGGER.debug("No changes defined")

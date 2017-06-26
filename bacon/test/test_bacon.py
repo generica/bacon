@@ -37,7 +37,7 @@ class BaconTest(unittest.TestCase):
         ''' Test blank '''
 
         pig = Piggy(None)
-        self.assertIsNone(pig.final_state)
+        self.assertEqual(pig.final_state, {})
         self.assertEqual(pig.changes, {})
 
 if __name__ == '__main__':
