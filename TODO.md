@@ -1,7 +1,6 @@
 # Things still to be done
 
 * service
-* file: ensure
 * package: centos
 * notify
 * doco

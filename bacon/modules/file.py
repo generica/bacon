@@ -44,19 +44,27 @@ def populate_metadata(change):
     if 'mode' not in change:
         change['mode'] = 0644
 
+    if 'ensure' not in change:
+        change['ensure'] = 'absent'
+
     return change
-
-
 
 def needs_change(change):
     ''' Detect if a change needs to occur or not '''
 
+    fp_change = populate_metadata(change)
+
+    if fp_change['ensure'] == 'absent':
+        # Simple scenario. If the file exists, nuke it
+        return os.path.exists(fp_change['path'])
+
+    # Now that we're here, ensure must be present
+
     # If the file doesn't exist, simple. Create it
-    if not os.path.exists(change['path']):
+    if not os.path.exists(fp_change['path']):
         return True
 
     # Otherwise, let's make a temporary file and compare
-    fp_change = populate_metadata(change)
 
     uid = pwd.getpwnam(fp_change['user']).pw_uid
     gid = grp.getgrnam(fp_change['group']).gr_gid
@@ -79,6 +87,10 @@ def perform_change(change):
     ''' Perform the change on the resource '''
 
     fp_change = populate_metadata(change)
+
+    if fp_change['ensure'] == 'absent':
+        os.remove(fp_change['path'])
+        return True
 
     uid = pwd.getpwnam(fp_change['user']).pw_uid
     gid = grp.getgrnam(fp_change['group']).gr_gid
