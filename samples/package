@@ -1,8 +1,12 @@
 ourPackage:
   type: package
   ensure: present
-  name: php
-ourNoPackage
+  name: awscli
+ourNoPackage:
   type: package
   ensure: absent
   name: php3
+ourVim:
+  type: package
+  ensure: present
+  name: vim

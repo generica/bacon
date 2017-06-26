@@ -109,7 +109,7 @@ if __name__ == "__main__":
     args = parse_arguments()
 
     # Root logger configuration
-    LOGGER = logging.getLogger(__name__)
+    LOGGER = logging.getLogger('bacon')
     if args.verbose:
         LOGGER.setLevel(logging.DEBUG)
     else:
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     pp = pprint.PrettyPrinter(indent=4)
 
     LOGGER.debug("We will end up with:")
-    LOGGER.debug(pp.pprint(pig.final_state))
+    LOGGER.debug(pp.pformat(pig.final_state))
 
     pig.calculate_changes()
 
@@ -144,7 +144,7 @@ if __name__ == "__main__":
         LOGGER.debug("No changes to be made")
     else:
         LOGGER.debug("Changes to apply:")
-        LOGGER.debug(pp.pprint(pig.changes))
+        LOGGER.debug(pp.pformat(pig.changes))
 
         if not args.test:
             pig.apply_changes()
