@@ -43,7 +43,7 @@ def package_is_installed(package):
 
     ourcommand = "%s ls --versions %s" % (BREW, package)
 
-    status, output = commands.getstatusoutput(ourcommand)
+    status, _ = commands.getstatusoutput(ourcommand)
 
     # Package installed returns a 0 here for success, convert to True
     # Returns a 1 for failure, so convert to False
@@ -86,7 +86,7 @@ def perform_change(change):
 
     ourcommand = "%s %s %s" % (BREW, command, package)
 
-    status, output = commands.getstatusoutput(ourcommand)
+    _, _ = commands.getstatusoutput(ourcommand)
 
     # FIXME: Check if it went ok?
 

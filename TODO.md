@@ -2,9 +2,10 @@
 
 * service
 * file: ensure
-* package
+* package: centos
 * notify
 * doco
 * templating
 * packaging
 * timing
+* checking whether apply worked

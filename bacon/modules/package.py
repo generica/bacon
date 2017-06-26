@@ -30,24 +30,29 @@ import logging
 
 LOGGER = logging.getLogger('bacon')
 
+def detect_linux_release():
+    ''' Attempt to find out what Linux sub-module we need '''
+
+    distro = platform.linux_distribution()
+    if distro[0] == 'debian':
+        return 'debian'
+    elif distro[0] == 'CentOS':
+        return 'centos'
+    else:
+        try:
+            with open("/etc/issue") as issue:
+                return issue.read().lower().split()[0]
+        except IOError:
+            return 'unknown'
+
+
 def detect_release():
     ''' Attempt to find out what OS sub-module we need '''
 
     if sys.platform == 'darwin':
         return 'darwin'
     elif sys.platform.startswith('linux'):
-        # Figure out the distro
-        distro = platform.linux_distribution()
-        if distro[0] == 'debian':
-            return 'debian'
-        elif distro[0] == 'CentOS':
-            return 'centos'
-        else:
-            try:
-                with open("/etc/issue") as f:
-                    return f.read().lower().split()[0]
-            except:
-                return 'unknown'
+        return detect_linux_release()
     elif sys.platform.startswith('freebsd'):
         return 'freebsd'
     else:
@@ -61,12 +66,12 @@ def needs_change(change):
     change_type = "modules.%s.%s" % (detect_release(), change['type'])
 
     try:
-        needs_change = getattr(__import__(change_type, fromlist=["needs_change"]), "needs_change")
+        distro_needs_change = getattr(__import__(change_type, fromlist=["needs_change"]), "needs_change")
     except ImportError:
         LOGGER.error("No support available for resource type: %s", change['type'])
         return
 
-    return needs_change(change)
+    return distro_needs_change(change)
 
 
 def perform_change(change):
@@ -75,9 +80,9 @@ def perform_change(change):
     change_type = "modules.%s.%s" % (detect_release(), change['type'])
 
     try:
-        perform_change = getattr(__import__(change_type, fromlist=["perform_change"]), "perform_change")
+        distro_perform_change = getattr(__import__(change_type, fromlist=["perform_change"]), "perform_change")
     except ImportError:
         LOGGER.error("No support available for resource type: %s", change['type'])
         return
 
-    return perform_change(change)
+    return distro_perform_change(change)

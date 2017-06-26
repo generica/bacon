@@ -25,8 +25,8 @@ import os
 import sys
 import argparse
 import logging
-import yaml
 import pprint
+import yaml
 
 
 class Piggy(object):
