@@ -41,7 +41,11 @@ def detect_linux_release():
     else:
         try:
             with open("/etc/issue") as issue:
-                return issue.read().lower().split()[0]
+                issue = issue.read().lower().split()[0]
+                if issue.lower() == 'amazon':
+                    return 'centos'
+                else:
+                    return issue
         except IOError:
             return 'unknown'
 
@@ -63,12 +67,13 @@ def detect_release():
 def needs_change(change):
     ''' Detect if a change needs to occur or not '''
 
+    release = detect_release()
     change_type = "modules.%s.%s" % (detect_release(), change['type'])
 
     try:
         distro_needs_change = getattr(__import__(change_type, fromlist=["needs_change"]), "needs_change")
     except ImportError:
-        LOGGER.error("No support available for resource type: %s", change['type'])
+        LOGGER.error("No support available for resource type: %s on OS %s", change['type'], release)
         return
 
     return distro_needs_change(change)
@@ -77,12 +82,13 @@ def needs_change(change):
 def perform_change(change):
     ''' Perform the change on the resource '''
 
-    change_type = "modules.%s.%s" % (detect_release(), change['type'])
+    release = detect_release()
+    change_type = "modules.%s.%s" % (release, change['type'])
 
     try:
         distro_perform_change = getattr(__import__(change_type, fromlist=["perform_change"]), "perform_change")
     except ImportError:
-        LOGGER.error("No support available for resource type: %s", change['type'])
+        LOGGER.error("No support available for resource type: %s on OS %s", change['type'], release)
         return
 
     return distro_perform_change(change)
