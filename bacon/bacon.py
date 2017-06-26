@@ -27,6 +27,7 @@ import argparse
 import logging
 import pprint
 import yaml
+from datetime import datetime
 
 
 class Piggy(object):
@@ -106,6 +107,8 @@ def parse_arguments():
 
 if __name__ == "__main__":
 
+    start_time = datetime.now()
+
     args = parse_arguments()
 
     # Root logger configuration
@@ -148,3 +151,6 @@ if __name__ == "__main__":
 
         if not args.test:
             pig.apply_changes()
+
+    end_time = datetime.now()
+    LOGGER.debug('Duration: %s', end_time - start_time)

@@ -7,5 +7,5 @@
 * doco
 * templating
 * packaging
-* timing
+* improve timing
 * checking whether apply worked
