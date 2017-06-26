@@ -5,7 +5,7 @@ ourPackage:
 ourNoPackage:
   type: package
   ensure: absent
-  name: php3
+  name: telnet
 ourVim:
   type: package
   ensure: present

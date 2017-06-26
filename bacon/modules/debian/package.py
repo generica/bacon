@@ -24,24 +24,66 @@ Bacon module for package operations
 Accepts a change structure for a change on a package
 '''
 
-import os
-import commands
-# FIXME: Replace with a non-deprecated method
 import logging
+import apt
+
 
 LOGGER = logging.getLogger(__name__)
-APT_GET="/usr/bin/apt-get"
+
+def package_is_installed(package):
+    ''' See if a package is installed or not '''
+
+    cache = apt.cache.Cache()
+    cache.update()
+
+    try:
+        pkg = cache[package]
+        return pkg.is_installed
+    except KeyError:
+        raise OSError("Package %s couldn't be found" % package)
+
 
 def needs_change(change):
     ''' Detect if a change needs to occur or not '''
 
-    return True
+    package = change['name']
+    ensure = change['ensure']
+
+    status = package_is_installed(package)
+
+    if ensure == "absent":
+        LOGGER.debug("Making sure %s is not here. Status: %s", package, status)
+        return status
+    elif ensure == "present":
+        LOGGER.debug("Making sure %s is here. Status: %s", package, status)
+        return not status
+    else:
+        LOGGER.error("Unsupported package status: %s", ensure)
+
+    return None
 
 
 def perform_change(change):
     ''' Perform the change on the resource '''
 
-    # Check for apt-get
-    if not (os.path.isfile(APT_GET) and os.access(APT_GET, os.X_OK)):
-        LOGGER.error("apt-get not found in /usr/bin\nUnsupported operating system")
-        return False
+    package = change['name']
+    ensure = change['ensure']
+
+    cache = apt.cache.Cache()
+    pkg = cache[package]
+
+    if ensure == "absent":
+        LOGGER.debug("Uninstalling %s", package)
+        pkg.mark_delete()
+    elif ensure == "present":
+        LOGGER.debug("Installing %s", package)
+        pkg.mark_install()
+    else:
+        LOGGER.error("Unsupported package status: %s", ensure)
+        return
+
+    cache.commit()
+
+    # FIXME: Detect errors?
+
+    return True

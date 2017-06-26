@@ -1,1 +1,3 @@
 python-yaml
+python-apt
+python-setuptools
