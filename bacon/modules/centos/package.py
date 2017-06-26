@@ -33,12 +33,9 @@ LOGGER = logging.getLogger(__name__)
 def package_is_installed(package):
     ''' See if a package is installed or not '''
 
-    yb = yum.YumBase()
+    yumbase = yum.YumBase()
 
-    if yb.rpmdb.searchNevra(name=package):
-        return True
-    else:
-        return False
+    return bool(yumbase.rpmdb.searchNevra(name=package))
 
 
 def needs_change(change):
@@ -67,25 +64,25 @@ def perform_change(change):
     package = change['name']
     ensure = change['ensure']
 
-    yb = yum.YumBase()
-    matches = yb.searchGenerator(['name'], [package])
+    yumbase = yum.YumBase()
+    matches = yumbase.searchGenerator(['name'], [package])
 
     if ensure == "absent":
         LOGGER.debug("Uninstalling %s", package)
-        for (package_obj, matched_value) in matches:
+        for (package_obj, _) in matches:
             if package_obj.name == package:
-                yb.remove(package_obj)
+                yumbase.remove(package_obj)
     elif ensure == "present":
         LOGGER.debug("Installing %s", package)
-        for (package_obj, matched_value) in matches:
+        for (package_obj, _) in matches:
             if package_obj.name == package:
-                yb.install(package_obj)
+                yumbase.install(package_obj)
     else:
         LOGGER.error("Unsupported package status: %s", ensure)
         return
 
-    yb.buildTransaction()
-    yb.processTransaction()
+    yumbase.buildTransaction()
+    yumbase.processTransaction()
 
     # FIXME: Detect errors?
 

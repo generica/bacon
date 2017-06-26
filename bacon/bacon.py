@@ -26,8 +26,8 @@ import sys
 import argparse
 import logging
 import pprint
-import yaml
 from datetime import datetime
+import yaml
 
 
 class Piggy(object):
@@ -53,10 +53,10 @@ class Piggy(object):
         if not self.final_state:
             return
 
-        for changeName, change in self.final_state.items():
+        for change_name, change in self.final_state.items():
 
             if 'type' not in change:
-                LOGGER.error("No change type associated with named resource: %s", changeName)
+                LOGGER.error("No change type associated with named resource: %s", change_name)
                 continue
             else:
                 change_type = "modules.%s" % (change['type'])
@@ -68,16 +68,16 @@ class Piggy(object):
                 continue
 
             if needs_change(change):
-                self.changes.update({changeName: change})
+                self.changes.update({change_name: change})
 
 
     def apply_changes(self):
         ''' Apply the changes we've calculated '''
 
-        for changeName, change in self.changes.items():
+        for change_name, change in self.changes.items():
 
             if 'type' not in change:
-                LOGGER.error("No change type associated with named resource: %s", changeName)
+                LOGGER.error("No change type associated with named resource: %s", change_name)
                 continue
             else:
                 change_type = "modules.%s" % (change['type'])
@@ -105,14 +105,13 @@ def parse_arguments():
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main():
+    ''' Do some work '''
 
     start_time = datetime.now()
 
     args = parse_arguments()
 
-    # Root logger configuration
-    LOGGER = logging.getLogger('bacon')
     if args.verbose:
         LOGGER.setLevel(logging.DEBUG)
     else:
@@ -136,10 +135,10 @@ if __name__ == "__main__":
         LOGGER.debug("No changes defined")
         sys.exit(0)
 
-    pp = pprint.PrettyPrinter(indent=4)
+    ppr = pprint.PrettyPrinter(indent=4)
 
     LOGGER.debug("We will end up with:")
-    LOGGER.debug(pp.pformat(pig.final_state))
+    LOGGER.debug(ppr.pformat(pig.final_state))
 
     pig.calculate_changes()
 
@@ -147,10 +146,18 @@ if __name__ == "__main__":
         LOGGER.debug("No changes to be made")
     else:
         LOGGER.debug("Changes to apply:")
-        LOGGER.debug(pp.pformat(pig.changes))
+        LOGGER.debug(ppr.pformat(pig.changes))
 
         if not args.test:
             pig.apply_changes()
 
     end_time = datetime.now()
     LOGGER.debug('Duration: %s', end_time - start_time)
+
+
+if __name__ == "__main__":
+
+    # Root logger configuration
+    LOGGER = logging.getLogger('bacon')
+
+    main()

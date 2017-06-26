@@ -61,10 +61,10 @@ def needs_change(change):
     uid = pwd.getpwnam(fp_change['user']).pw_uid
     gid = grp.getgrnam(fp_change['group']).gr_gid
 
-    fd, path = tempfile.mkstemp()
+    fdesc, path = tempfile.mkstemp()
 
-    os.write(fd, fp_change['content'])
-    os.close(fd)
+    os.write(fdesc, fp_change['content'])
+    os.close(fdesc)
     os.chown(path, uid, gid)
     os.chmod(path, fp_change['mode'])
 
