@@ -67,16 +67,31 @@ def detect_release():
 def needs_change(change):
     ''' Detect if a change needs to occur or not '''
 
+    package = change['name']
+    ensure = change['ensure']
+
     release = detect_release()
-    change_type = "modules.%s.%s" % (detect_release(), change['type'])
+
+    is_installed = "modules.%s.%s" % (detect_release(), 'package')
 
     try:
-        distro_needs_change = getattr(__import__(change_type, fromlist=["needs_change"]), "needs_change")
+        distro_package_is_installed = getattr(__import__(is_installed, fromlist=["package_is_installed"]), "package_is_installed")
     except ImportError:
         LOGGER.error("No support available for resource type: %s on OS %s", change['type'], release)
         return
 
-    return distro_needs_change(change)
+    status = distro_package_is_installed(package)
+
+    if ensure == "absent":
+        LOGGER.debug("Making sure %s is not here. Status: %s", package, status)
+        return status
+    elif ensure == "present":
+        LOGGER.debug("Making sure %s is here. Status: %s", package, status)
+        return not status
+    else:
+        LOGGER.error("Unsupported package status: %s", ensure)
+
+    return None
 
 
 def perform_change(change):

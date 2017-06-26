@@ -51,26 +51,6 @@ def package_is_installed(package):
     return not bool(status)
 
 
-def needs_change(change):
-    ''' Detect if a change needs to occur or not '''
-
-    package = change['name']
-    ensure = change['ensure']
-
-    status = package_is_installed(package)
-
-    if ensure == "absent":
-        LOGGER.debug("Making sure %s is not here. Status: %s", package, status)
-        return status
-    elif ensure == "present":
-        LOGGER.debug("Making sure %s is here. Status: %s", package, status)
-        return not status
-    else:
-        LOGGER.error("Unsupported package status: %s", ensure)
-
-    return None
-
-
 def perform_change(change):
     ''' Perform the change on the resource '''
 
