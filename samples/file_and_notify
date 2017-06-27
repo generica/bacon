@@ -1,0 +1,11 @@
+ourTmpFile:
+  type: file
+  ensure: present
+  path: /tmp/foo
+  content: "Hello world"
+  notify: ourService
+ourService:
+  type: service
+  manager: systemd
+  name: ssh
+  ensure: running

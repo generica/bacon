@@ -28,7 +28,7 @@ import logging
 import yum
 
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger('bacon')
 
 def package_is_installed(package):
     ''' See if a package is installed or not '''

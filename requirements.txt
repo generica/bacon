@@ -1,3 +1,4 @@
 python-yaml
 python-apt
 python-setuptools
+python-dbus

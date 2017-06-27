@@ -1,0 +1,10 @@
+ourService:
+  type: service
+  manager: systemd
+  name: ssh
+  ensure: running
+ourServiceRsync:
+  type: service
+  manager: systemd
+  name: rsync
+  ensure: running
