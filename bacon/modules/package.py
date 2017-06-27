@@ -34,7 +34,7 @@ def detect_linux_release():
     ''' Attempt to find out what Linux sub-module we need '''
 
     distro = platform.linux_distribution()
-    if distro[0] == 'debian':
+    if distro[0] == 'debian' or distro[0].lower() == 'ubuntu':
         return 'debian'
     elif distro[0] == 'CentOS':
         return 'centos'
