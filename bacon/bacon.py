@@ -37,6 +37,7 @@ class Piggy(object):
         self.args = arguments
         self.changes = {}
         self.final_state = {}
+        self.notify_list = []
 
     def parse_file(self, filename):
         ''' Parse a yaml file with instructions, and add it to our list '''
@@ -89,6 +90,19 @@ class Piggy(object):
                 continue
 
             perform_change(change)
+
+            if 'notify' in change:
+                if type(change['notify']) is list:
+                    self.notify_list += change['notify']
+                else:
+                    self.notify_list += [change['notify']]
+
+
+    def notify_changes(self):
+        ''' Notify about the changes we've done '''
+
+        for service in self.notify_list:
+            LOGGER.debug("Will notify: %s", service)
 
 
 def parse_arguments():
@@ -148,6 +162,9 @@ def main():
 
         if not args.test:
             pig.apply_changes()
+
+        if not args.test:
+            pig.notify_changes()
 
     end_time = datetime.now()
     LOGGER.debug('Duration: %s', end_time - start_time)

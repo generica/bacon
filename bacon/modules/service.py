@@ -58,10 +58,10 @@ def needs_change(change):
 
     if ensure == "running":
         LOGGER.debug("Making sure %s is running. Status: %s", service, status)
-        return status
+        return not status
     elif ensure == "stopped":
         LOGGER.debug("Making sure %s is stopped. Status: %s", service, status)
-        return not status
+        return status
     else:
         LOGGER.error("Unsupported service status: %s", ensure)
 
@@ -84,4 +84,4 @@ def perform_change(change):
         LOGGER.error("No support available for resource type: %s on OS %s", change['type'], release)
         return
 
-    return our_perform_change(change)
+    return our_perform_change(service, ensure)

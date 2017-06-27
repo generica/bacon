@@ -39,21 +39,33 @@ def service_is_running(service):
     if not service.endswith(".service"):
         service += ".service"
 
-    try:
-        job = manager.GetUnitFileState(service)
-    except dbus.exceptions.DBusException as expt:
-        if expt._dbus_error_name == 'org.freedesktop.DBus.Error.FileNotFound':
-            LOGGER.error("Service %s not found", service)
+    joblist = manager.ListUnits()
+
+    for job in joblist:
+        name = job[0]
+        active = job[3]
+        if name == service:
+            if active == 'active':
+                return True
             return False
 
-    LOGGER.debug("Systemd is %s for %s", job, service)
-
-    if job == 'enabled':
-        return True
-
+    LOGGER.error("Service %s not found", service)
     return False
 
-def perform_change(change):
+
+def perform_change(service, ensure):
     ''' Perform the change on the resource '''
 
-    LOGGER.info("Systemd is go")
+    sysbus = dbus.SystemBus()
+    systemd1 = sysbus.get_object('org.freedesktop.systemd1', '/org/freedesktop/systemd1')
+    manager = dbus.Interface(systemd1, 'org.freedesktop.systemd1.Manager')
+
+    if not service.endswith(".service"):
+        service += ".service"
+
+    if ensure == 'running':
+        manager.StartUnit(service, 'fail')
+    elif ensure == 'stopped':
+        manager.StopUnit(service)
+
+    return None
