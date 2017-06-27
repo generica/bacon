@@ -1,18 +1,21 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='bacon',
-    version='0.1.0',
+    name="bacon",
+    version="0.2.0",
     packages=find_packages(),
-    install_requires=[
-    ],
+    package_data={
+        'bacon': ['samples/*'],
+    },
     entry_points={
         'console_scripts': [
-            'bacon = bacon.bacon',
+            'bacon = bacon:main',
         ]
     },
+    author="Brett Pemberton",
+    author_email="brett@pemberton.at",
+    description="Simple OS configuration management",
+    license="GPL3",
     url="https://brettpemberton.xyz/bacon",
-    maintainer="Brett Pemberton",
-    maintainer_email="brett@pemberton.at",
-    test_suite="test",
+    test_suite="bacon.test.test_bacon",
 )
