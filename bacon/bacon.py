@@ -104,6 +104,23 @@ class Piggy(object):
         for service in self.notify_list:
             LOGGER.debug("Will notify: %s", service)
 
+            module_path = "modules.service"
+
+            try:
+                perform_reload = getattr(__import__(module_path, fromlist=["perform_change"]), "perform_change")
+            except ImportError:
+                LOGGER.error("No support available for resource type: service")
+                continue
+
+            # Grab our service, and set ensure to reload, then send it on
+            if service in self.final_state:
+                change = self.final_state[service]
+                change['ensure'] = 'reload'
+
+                perform_reload(change)
+            else:
+                LOGGER.error("Couldn't notify named service %s as it doesn't exist in manifest", service)
+
 
 def parse_arguments():
     ''' See what's up '''

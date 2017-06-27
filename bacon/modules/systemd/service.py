@@ -67,5 +67,7 @@ def perform_change(service, ensure):
         manager.StartUnit(service, 'fail')
     elif ensure == 'stopped':
         manager.StopUnit(service)
+    elif ensure == 'reload':
+        manager.Reload(service)
 
     return None
