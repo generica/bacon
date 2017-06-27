@@ -92,7 +92,7 @@ class Piggy(object):
             perform_change(change)
 
             if 'notify' in change:
-                if type(change['notify']) is list:
+                if isinstance(change['notify'], list):
                     self.notify_list += change['notify']
                 else:
                     self.notify_list += [change['notify']]

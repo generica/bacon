@@ -24,7 +24,6 @@ Bacon module for service operations
 Accepts a change structure for a change on a service
 '''
 
-import sys
 import logging
 
 LOGGER = logging.getLogger('bacon')
@@ -46,12 +45,12 @@ def needs_change(change):
     service = fp_change['name']
     ensure = fp_change['ensure']
 
-    module_path = "modules.%s.%s" % (change['manager'], 'service')
+    module_path = "modules.%s.%s" % (fp_change['manager'], 'service')
 
     try:
         our_service_is_running = getattr(__import__(module_path, fromlist=["service_is_running"]), "service_is_running")
     except ImportError:
-        LOGGER.error("No support available for resource type: %s using manager %s", change['type'], change['manager'])
+        LOGGER.error("No support available for resource type: %s using manager %s", fp_change['type'], fp_change['manager'])
         return
 
     status = our_service_is_running(service)
@@ -76,12 +75,12 @@ def perform_change(change):
     service = fp_change['name']
     ensure = fp_change['ensure']
 
-    module_path = "modules.%s.%s" % (change['manager'], 'service')
+    module_path = "modules.%s.%s" % (fp_change['manager'], 'service')
 
     try:
         our_perform_change = getattr(__import__(module_path, fromlist=["perform_change"]), "perform_change")
     except ImportError:
-        LOGGER.error("No support available for resource type: %s on OS %s", change['type'], release)
+        LOGGER.error("No support available for resource type: %s using manager %s", fp_change['type'], fp_change['manager'])
         return
 
     return our_perform_change(service, ensure)
