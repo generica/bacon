@@ -42,7 +42,7 @@ def populate_metadata(change):
         change['group'] = 'nogroup'
 
     if 'mode' not in change:
-        change['mode'] = 0644
+        change['mode'] = '0644'
 
     if 'ensure' not in change:
         change['ensure'] = 'absent'
@@ -71,10 +71,10 @@ def needs_change(change):
 
     fdesc, path = tempfile.mkstemp()
 
-    os.write(fdesc, fp_change['content'])
+    os.write(fdesc, fp_change['content'].encode())
     os.close(fdesc)
     os.chown(path, uid, gid)
-    os.chmod(path, fp_change['mode'])
+    os.chmod(path, int(fp_change['mode']))
 
     different = filecmp.cmp(path, fp_change['path'])
 
@@ -100,4 +100,4 @@ def perform_change(change):
         tmpf.close()
 
     os.chown(fp_change['path'], uid, gid)
-    os.chmod(fp_change['path'], fp_change['mode'])
+    os.chmod(fp_change['path'], int(fp_change['mode']))
