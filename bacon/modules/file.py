@@ -29,6 +29,9 @@ import tempfile
 import filecmp
 import pwd
 import grp
+import logging
+
+LOGGER = logging.getLogger('bacon')
 
 
 def populate_metadata(change):
