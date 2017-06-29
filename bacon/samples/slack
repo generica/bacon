@@ -1,0 +1,29 @@
+ourPHPFile:
+  type: file
+  ensure: present
+  path: /var/www/html/index.php
+  mode: 0644
+  user: www-data
+  group: www-data
+  content: |
+   <?php
+    header("Content-Type: text/plain");
+    echo "Hello, world!\n";
+  notify: ourWebServerService
+ourNoFile:
+  type: file
+  ensure: absent
+  path: /var/www/html/index.html
+ourWebServer:
+  type: package
+  ensure: present
+  name: apache2
+ourPHP:
+  type: package
+  ensure: present
+  name: libapache2-mod-php
+ourWebServerService:
+  type: service
+  manager: systemd
+  name: apache2
+  ensure: running
