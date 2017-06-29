@@ -39,9 +39,7 @@ def service_is_running(service):
         LOGGER.error("Service %s not found", service)
         return False
 
-    print(service_path)
-
-    result = subprocess.call([service_path, "status"])
+    result = subprocess.call([service_path, "status"], stdout=subprocess.DEVNULL)
 
     return not bool(result)
 
