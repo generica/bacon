@@ -86,13 +86,18 @@ class Piggy(object):
         for change_name, change in self.changes.items():
 
             if 'requires' in change:
+
+                will_skip = False
+
                 if not isinstance(change['requires'], list):
                     change['requires'] = [change['requires']]
                 for req in change['requires']:
                     if req not in self.done_or_unneeded:
                         LOGGER.debug("Skipping %s for now, because of unmet requirement: %s", change_name, req)
                         self.changes_skipped.append(change_name)
-                        continue
+                        will_skip = True
+                if will_skip:
+                    continue
 
             if 'type' not in change:
                 LOGGER.error("No change type associated with named resource: %s", change_name)
