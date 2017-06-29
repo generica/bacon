@@ -72,10 +72,10 @@ def needs_change(change):
 
     release = detect_release()
 
-    is_installed = "modules.%s.%s" % (detect_release(), 'package')
+    module_path = "bacon.modules.%s.%s" % (detect_release(), 'package')
 
     try:
-        distro_package_is_installed = getattr(__import__(is_installed, fromlist=["package_is_installed"]), "package_is_installed")
+        distro_package_is_installed = getattr(__import__(module_path, fromlist=["package_is_installed"]), "package_is_installed")
     except ImportError:
         LOGGER.error("No support available for resource type: %s on OS %s", change['type'], release)
         return
@@ -98,10 +98,10 @@ def perform_change(change):
     ''' Perform the change on the resource '''
 
     release = detect_release()
-    change_type = "modules.%s.%s" % (release, change['type'])
+    module_path = "bacon.modules.%s.%s" % (release, change['type'])
 
     try:
-        distro_perform_change = getattr(__import__(change_type, fromlist=["perform_change"]), "perform_change")
+        distro_perform_change = getattr(__import__(module_path, fromlist=["perform_change"]), "perform_change")
     except ImportError:
         LOGGER.error("No support available for resource type: %s on OS %s", change['type'], release)
         return

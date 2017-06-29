@@ -29,6 +29,8 @@ import pprint
 from datetime import datetime
 import yaml
 
+LOGGER = logging.getLogger('bacon')
+
 
 class Piggy(object):
     ''' A class to hold our final state, and any changes we want to apply '''
@@ -60,10 +62,10 @@ class Piggy(object):
                 LOGGER.error("No change type associated with named resource: %s", change_name)
                 continue
             else:
-                change_type = "modules.%s" % (change['type'])
+                module_path = "bacon.modules.%s" % (change['type'])
 
             try:
-                needs_change = getattr(__import__(change_type, fromlist=["needs_change"]), "needs_change")
+                needs_change = getattr(__import__(module_path, fromlist=["needs_change"]), "needs_change")
             except ImportError:
                 LOGGER.error("No support available for resource type: %s", change['type'])
                 continue
@@ -81,10 +83,10 @@ class Piggy(object):
                 LOGGER.error("No change type associated with named resource: %s", change_name)
                 continue
             else:
-                change_type = "modules.%s" % (change['type'])
+                module_path = "bacon.modules.%s" % (change['type'])
 
             try:
-                perform_change = getattr(__import__(change_type, fromlist=["perform_change"]), "perform_change")
+                perform_change = getattr(__import__(module_path, fromlist=["perform_change"]), "perform_change")
             except ImportError:
                 LOGGER.error("No support available for resource type: %s", change['type'])
                 continue
@@ -104,7 +106,7 @@ class Piggy(object):
         for service in self.notify_list:
             LOGGER.debug("Will notify: %s", service)
 
-            module_path = "modules.service"
+            module_path = "bacon.modules.service"
 
             try:
                 perform_reload = getattr(__import__(module_path, fromlist=["perform_change"]), "perform_change")
@@ -188,8 +190,5 @@ def main():
 
 
 if __name__ == "__main__":
-
-    # Root logger configuration
-    LOGGER = logging.getLogger('bacon')
 
     main()

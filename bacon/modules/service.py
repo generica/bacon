@@ -45,7 +45,7 @@ def needs_change(change):
     service = fp_change['name']
     ensure = fp_change['ensure']
 
-    module_path = "modules.%s.%s" % (fp_change['manager'], 'service')
+    module_path = "bacon.modules.%s.%s" % (fp_change['manager'], 'service')
 
     try:
         our_service_is_running = getattr(__import__(module_path, fromlist=["service_is_running"]), "service_is_running")
@@ -75,7 +75,7 @@ def perform_change(change):
     service = fp_change['name']
     ensure = fp_change['ensure']
 
-    module_path = "modules.%s.%s" % (fp_change['manager'], 'service')
+    module_path = "bacon.modules.%s.%s" % (fp_change['manager'], 'service')
 
     try:
         our_perform_change = getattr(__import__(module_path, fromlist=["perform_change"]), "perform_change")

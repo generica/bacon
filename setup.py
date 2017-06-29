@@ -2,14 +2,14 @@ from setuptools import setup, find_packages
 
 setup(
     name="bacon",
-    version="0.2.0",
+    version="0.2.1",
     packages=find_packages(),
     package_data={
         'bacon': ['samples/*'],
     },
     entry_points={
         'console_scripts': [
-            'bacon = bacon:main',
+            'bacon = bacon.bacon:main',
         ]
     },
     author="Brett Pemberton",
