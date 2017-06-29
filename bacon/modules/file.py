@@ -95,7 +95,7 @@ def perform_change(change):
         try:
             os.remove(fp_change['path'])
         except FileNotFoundError:
-            # No big deal
+            LOGGER.debug("Tried to remove a nonexistent file")
         return True
 
     uid = pwd.getpwnam(fp_change['user']).pw_uid
