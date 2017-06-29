@@ -75,7 +75,7 @@ class Piggy(object):
             if needs_change(change):
                 self.changes.update({change_name: change})
             else:
-                self.done_or_unneeded.append(change)
+                self.done_or_unneeded.append(change_name)
 
 
     def apply_changes(self):
