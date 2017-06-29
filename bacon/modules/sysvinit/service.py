@@ -19,55 +19,47 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-Bacon module for systemd service operations
+Bacon module for sysvinit service operations
 
 Accepts a change structure for a change on a package
 '''
 
 import logging
-import dbus
+import os
+import subprocess
 
 LOGGER = logging.getLogger("bacon")
 
 def service_is_running(service):
     ''' See if a service is running or not '''
 
-    sysbus = dbus.SystemBus()
-    systemd1 = sysbus.get_object('org.freedesktop.systemd1', '/org/freedesktop/systemd1')
-    manager = dbus.Interface(systemd1, 'org.freedesktop.systemd1.Manager')
+    service_path = '/etc/init.d/%s' % (service)
 
-    if not service.endswith(".service"):
-        service += ".service"
+    if not os.path.exists(service_path):
+        LOGGER.error("Service %s not found", service)
+        return False
 
-    joblist = manager.ListUnits()
+    print(service_path)
 
-    for job in joblist:
-        name = job[0]
-        active = job[3]
-        if name == service:
-            if active == 'active':
-                return True
-            return False
+    result = subprocess.call([service_path, "status"])
 
-    LOGGER.error("Service %s not found", service)
-    return False
+    return not bool(result)
 
 
 def perform_change(service, ensure):
     ''' Perform the change on the resource '''
 
-    sysbus = dbus.SystemBus()
-    systemd1 = sysbus.get_object('org.freedesktop.systemd1', '/org/freedesktop/systemd1')
-    manager = dbus.Interface(systemd1, 'org.freedesktop.systemd1.Manager')
+    service_path = os.path.join(os.path.sep, 'etc', 'init.d', service)
 
-    if not service.endswith(".service"):
-        service += ".service"
+    if not os.path.exists(service_path):
+        LOGGER.error("Service %s not found", service)
+        return False
 
     if ensure == 'running':
-        manager.StartUnit(service, 'fail')
+        subprocess.call([service_path, 'start'])
     elif ensure == 'stopped':
-        manager.StopUnit(service)
+        subprocess.call([service_path, 'stop'])
     elif ensure == 'reload':
-        manager.Reload(service)
+        subprocess.call([service_path, 'reload'])
 
     return None

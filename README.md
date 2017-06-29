@@ -86,23 +86,6 @@ def perform_change(change):
 
 See existing OSes for examples, and the format of the change request
 
-> I don't use systemd, I use sysvinit!
-
-Sorry! Easy fix though.
-* Add a new module, ```bacon/modules/sysvinit/service.py```
-
-It should have two functions (at least):
-
-```python3
-def service_is_running(service):
-    ''' See if a service is running or not '''
-...
-def perform_change(service, ensure):
-    ''' Perform the change on the resource '''
-```
-
-See systemd directory for examples, and the format of the change request
-
 > I want to do more than just files, packages and services! What about managing users as well?
 
 Easy!

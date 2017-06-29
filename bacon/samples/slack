@@ -25,10 +25,10 @@ ourWebServer:
 ourPHP:
   type: package
   ensure: present
-  name: libapache2-mod-php
+  name: libapache2-mod-php5
 ourWebServerService:
   type: service
-  manager: systemd
+  manager: sysvinit
   name: apache2
   ensure: running
   requires: ourWebServer

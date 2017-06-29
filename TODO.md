@@ -1,10 +1,6 @@
 # Things still to be done
 
-## Core functionality
-* sysvinit
-
 ## Make pretty
-* doco
 * more tests
 * templating
 * packaging
