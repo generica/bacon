@@ -40,6 +40,8 @@ class Piggy(object):
         self.changes = {}
         self.final_state = {}
         self.notify_list = []
+        self.done_or_unneeded = []
+        self.changes_skipped = []
 
     def parse_file(self, filename):
         ''' Parse a yaml file with instructions, and add it to our list '''
@@ -72,12 +74,25 @@ class Piggy(object):
 
             if needs_change(change):
                 self.changes.update({change_name: change})
+            else:
+                self.done_or_unneeded.append(change)
 
 
     def apply_changes(self):
         ''' Apply the changes we've calculated '''
 
+        self.changes_skipped = []
+
         for change_name, change in self.changes.items():
+
+            if 'requires' in change:
+                if not isinstance(change['requires'], list):
+                    change['requires'] = [change['requires']]
+                for req in change['requires']:
+                    if req not in self.done_or_unneeded:
+                        LOGGER.debug("Skipping %s for now, because of unmet requirement: %s", change_name, req)
+                        self.changes_skipped.append(change_name)
+                        continue
 
             if 'type' not in change:
                 LOGGER.error("No change type associated with named resource: %s", change_name)
@@ -180,8 +195,14 @@ def main():
         LOGGER.debug("Changes to apply:")
         LOGGER.debug(ppr.pformat(pig.changes))
 
+        keep_trying = True
+
         if not args.test:
-            pig.apply_changes()
+            while keep_trying:
+                last_skipped = pig.changes_skipped
+                pig.apply_changes()
+                if last_skipped == pig.changes_skipped:
+                    keep_trying = False
 
         if not args.test:
             pig.notify_changes()

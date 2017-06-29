@@ -5,14 +5,18 @@ ourPHPFile:
   mode: 0644
   user: www-data
   group: www-data
+  notify: ourWebServerService
+  requires:
+    - ourWebServer
+    - ourWebServerService
   content: |
    <?php
     header("Content-Type: text/plain");
     echo "Hello, world!\n";
-  notify: ourWebServerService
 ourNoFile:
   type: file
   ensure: absent
+  requires: ourWebServer
   path: /var/www/html/index.html
 ourWebServer:
   type: package
@@ -27,3 +31,4 @@ ourWebServerService:
   manager: systemd
   name: apache2
   ensure: running
+  requires: ourWebServer
