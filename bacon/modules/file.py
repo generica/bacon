@@ -56,7 +56,10 @@ def needs_change(change):
 
     if fp_change['ensure'] == 'absent':
         # Simple scenario. If the file exists, nuke it
-        return os.path.exists(fp_change['path'])
+        # Wait, not so simple. If this has a dependency on a package,
+        # And the file is installed by the package, then we have a race.
+        # Let's just always make sure the file is gone
+        return True
 
     # Now that we're here, ensure must be present
 
@@ -89,7 +92,10 @@ def perform_change(change):
     fp_change = populate_metadata(change)
 
     if fp_change['ensure'] == 'absent':
-        os.remove(fp_change['path'])
+        try:
+            os.remove(fp_change['path'])
+        except FileNotFoundError:
+            # No big deal
         return True
 
     uid = pwd.getpwnam(fp_change['user']).pw_uid
