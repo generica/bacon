@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="bacon",
-    version="0.2.2",
+    version="0.2.3",
     packages=find_packages(),
     package_data={
         'bacon': ['samples/*'],
