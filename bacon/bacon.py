@@ -159,8 +159,9 @@ def main():
 
     pig = Piggy(args)
 
-    for pigfile in pig.args.file:
-        pig.parse_file(pigfile)
+    if pig.args.file:
+        for pigfile in pig.args.file:
+            pig.parse_file(pigfile)
 
     if not pig.final_state:
         LOGGER.debug("No changes defined")
