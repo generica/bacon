@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import unittest
 import os
-from bacon import Piggy
+from bacon.bacon import Piggy
 
 class BaconTest(unittest.TestCase):
     localstore = os.getcwd()

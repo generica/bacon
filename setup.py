@@ -14,6 +14,8 @@ setup(
     },
     author="Brett Pemberton",
     author_email="brett@pemberton.at",
+    maintainer="Brett Pemberton",
+    maintainer_email="brett@pemberton.at",
     description="Simple OS configuration management",
     license="GPL3",
     url="https://brettpemberton.xyz/bacon",
