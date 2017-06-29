@@ -13,3 +13,5 @@
 * parse yaml and warn on missing/conflicting/invalid?
 * improve timing
 * checking whether apply worked
+* Multiple notify
+* Package request version
