@@ -1,4 +1,4 @@
-python-yaml
-python-apt
-python-setuptools
-python-dbus
+python3-yaml
+python3-apt
+python3-setuptools
+python3-dbus
